@@ -45,16 +45,21 @@ var Paypal = (opts = {}) => {
     let pr = params || {};
     let o = bella.copies(payload, pr);
     o.METHOD = method;
+
+    const headers = pr.AUTHORIZATION ? {
+      'X-PAYPAL-AUTHORIZATION': pr.AUTHORIZATION
+    } : {
+      'X-PAYPAL-SECURITY-USERID': o.USER,
+      'X-PAYPAL-SECURITY-PASSWORD': o.PWD,
+      'X-PAYPAL-SECURITY-SIGNATURE': o.SIGNATURE,
+      'X-PAYPAL-RESPONSE-DATA-FORMAT': 'JSON'
+    };
+
     return new Promise((resolve, reject) => {
       return request.post({
         url: baseURL,
-        headers: {
-          'X-PAYPAL-SECURITY-USERID': o.USER,
-          'X-PAYPAL-SECURITY-PASSWORD': o.PWD,
-          'X-PAYPAL-SECURITY-SIGNATURE': o.SIGNATURE,
-          'X-PAYPAL-RESPONSE-DATA-FORMAT': 'JSON'
-        },
-        body: stringify(pr)
+        body: stringify(pr),
+        headers
       }, (err, response, body) => {
         if (err) {
           return reject(err);
@@ -66,6 +71,7 @@ var Paypal = (opts = {}) => {
   };
   return {
     request: sendRequest,
+    getBaseURL: () => baseURL,
     formatCurrency
   };
 };
