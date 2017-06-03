@@ -28,7 +28,8 @@ var Paypal = (opts = {}) => {
     mode = 'sandbox',
     username = '',
     password = '',
-    signature = ''
+    signature = '',
+    timeout = 15000
   } = opts;
 
   let baseURL = mode === 'live' ? BASE_API_LIVE : BASE_API_SANDBOX;
@@ -59,7 +60,8 @@ var Paypal = (opts = {}) => {
       return request.post({
         url: baseURL,
         body: stringify(pr),
-        headers
+        headers,
+        timeout
       }, (err, response, body) => {
         if (err) {
           return reject(err);
